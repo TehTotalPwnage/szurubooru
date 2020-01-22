@@ -5,9 +5,8 @@
 version: '2'
 
 services:
-  api:
-    build:
-      context: ./server
+  server:
+    image: szurubooru/server:latest
     depends_on:
       - sql
       - elasticsearch
@@ -24,25 +23,27 @@ services:
       #POSTGRES_PORT: 5432
       #ESEARCH_PORT: 9200
       #ESEARCH_INDEX: szurubooru
+      #ESEARCH_PASSWORD: (empty by default, set if you are using an external
+      #                  source for elasticsearch and want to use HTTP basic
+      #                  authentication for security)
+      #ESEARCH_USER: szurubooru (only used if password is set)
       #LOG_SQL: 0 (1 for verbose SQL logs)
     volumes:
       - "${MOUNT_DATA}:/data"
       - "./server/config.yaml:/opt/app/config.yaml"
   client:
-    build:
-      context: ./client
-      args:
-        BUILD_INFO:
+    image: szurubooru/client:latest
     depends_on:
-      - api
+      - server
     environment:
-      BACKEND_HOST: api
+      BACKEND_HOST: server
+      BASE_URL:
     volumes:
       - "${MOUNT_DATA}:/data:ro"
     ports:
       - "${PORT}:80"
   sql:
-    image: postgres:alpine
+    image: postgres:11-alpine
     restart: unless-stopped
     environment:
       POSTGRES_USER:
@@ -59,6 +60,10 @@ services:
       ES_JAVA_OPTS: -Xms512m -Xmx512m
     volumes:
       - index:/usr/share/elasticsearch/data
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
 
 volumes:
   index: # Scratch space for ElasticSearch index, will be rebuilt if lost

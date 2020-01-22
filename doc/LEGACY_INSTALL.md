@@ -1,12 +1,16 @@
-**This installation guide is deprecated and might be out
-of date! It is recommended that you deploy using
-[Docker](https://github.com/rr-/szurubooru/blob/master/INSTALL.md)
-instead.**
+**This installation guide is deprecated and might be out of date!
+It is recommended that you deploy using [Docker](INSTALL.md) instead.**
 
 This guide assumes Arch Linux. Although exact instructions for other
 distributions are different, the steps stay roughly the same.
 
 ### Installing hard dependencies
+
+Szurubooru requires the following dependencies:
+- Python (3.5 or later)
+- Postgres
+- FFmpeg
+- node.js
 
 ```console
 user@host:~$ sudo pacman -S postgresql
@@ -163,8 +167,11 @@ In this example:
 
 - The booru is accessed from `http://example.com/`
 - The API is accessed from `http://example.com/api`
-- The API server listens locally on port 6666, and is proxied by nginx
+- The API server listens locally on port 6666, and is proxied by nginx or apache
 - The static files are served from `/srv/www/booru/client/public/data`
+
+You can use either nginx or apache to serve your static content and proxy the api server.
+Choose whichever you prefer, but don't use both.
 
 **nginx configuration**:
 
@@ -186,6 +193,24 @@ server {
         try_files $uri /index.htm;
     }
 }
+```
+
+**apache configuration**:
+
+```apache
+<VirtualHost *:80>
+    ServerName example.com
+
+    Redirect 302 /api /api/
+
+    ProxyPreserveHost On
+    ProxyPass /api/ http://127.0.0.1:6666/
+    ProxyPassReverse /api/ http://127.0.0.1:6666/
+
+    DocumentRoot "/srv/www/booru/client/public"
+    FallbackResource /index.htm
+    AllowEncodedSlashes On
+</VirtualHost>
 ```
 
 **`config.yaml`**:

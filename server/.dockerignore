@@ -1,8 +1,15 @@
-szurubooru/tests/*
-setup.cfg
+# Linter configs
 .pylintrc
-mypi.ini
+mypy.ini
 
+# Python requirements files
+requirements.txt
+dev-requirements.txt
+
+# Docker build files
 Dockerfile
 .dockerignore
-**/.gitignore
+hooks/
+
+# User configured config file
+config.yaml

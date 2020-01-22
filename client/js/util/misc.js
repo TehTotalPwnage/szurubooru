@@ -2,6 +2,7 @@
 
 const markdown = require('./markdown.js');
 const uri = require('./uri.js');
+const settings = require('../models/settings.js');
 
 function decamelize(str, sep) {
     sep = sep === undefined ? '-' : sep;
@@ -197,6 +198,13 @@ function dataURItoBlob(dataURI) {
     return new Blob([data], {type: mimeString});
 }
 
+function getPrettyTagName(tag) {
+    if (settings.get().tagUnderscoresAsSpaces) {
+        return tag.replace(/_/g, " ");
+    }
+    return tag;
+}
+
 module.exports = {
     range:                   range,
     formatRelativeTime:      formatRelativeTime,
@@ -214,4 +222,5 @@ module.exports = {
     decamelize:              decamelize,
     escapeSearchTerm:        escapeSearchTerm,
     dataURItoBlob:           dataURItoBlob,
+    getPrettyTagName:        getPrettyTagName,
 };

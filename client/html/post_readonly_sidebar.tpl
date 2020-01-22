@@ -8,6 +8,7 @@
                     'image/gif': 'GIF',
                     'image/jpeg': 'JPEG',
                     'image/png': 'PNG',
+                    'image/webp': 'WEBP',
                     'video/webm': 'WEBM',
                     'video/mp4': 'MPEG-4',
                     'application/x-shockwave-flash': 'SWF',
@@ -89,9 +90,9 @@
                             --></a><!--
                         --><% } %><!--
                         --><% if (ctx.canListPosts) { %><!--
-                            --><a href='<%- ctx.formatClientLink('posts', {query: tag.names[0]}) %>' class='<%= ctx.makeCssName(tag.category, 'tag') %>'><!--
+                            --><a href='<%- ctx.formatClientLink('posts', {query: ctx.escapeColons(tag.names[0])}) %>' class='<%= ctx.makeCssName(tag.category, 'tag') %>'><!--
                         --><% } %><!--
-                            --><%- tag.names[0] %>&#32;<!--
+                            --><%- ctx.getPrettyTagName(tag.names[0]) %>&#32;<!--
                         --><% if (ctx.canListPosts) { %><!--
                             --></a><!--
                         --><% } %><!--
